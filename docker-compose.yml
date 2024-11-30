@@ -1,0 +1,64 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - fineract_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init script
+
+  activemq:
+    image: apache/activemq-artemis:latest-alpine
+    container_name: activemq
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    networks:
+      - fineract_network
+
+  fineract:
+    image: apache/fineract:latest
+    container_name: fineract
+    ports:
+      - "8443:8443"
+    environment:
+      FINERACT_DEFAULT_TENANTDB_HOSTNAME: postgres
+      FINERACT_DEFAULT_TENANTDB_IDENTIFIER: default
+      FINERACT_DEFAULT_TENANTDB_NAME: fineract_default
+      FINERACT_DEFAULT_TENANTDB_PORT: 5432
+      FINERACT_DEFAULT_TENANTDB_PWD: postgres
+      FINERACT_DEFAULT_TENANTDB_UID: postgres
+      FINERACT_HIKARI_DRIVER_SOURCE_CLASS_NAME: org.postgresql.Driver
+      FINERACT_HIKARI_JDBC_URL: jdbc:postgresql://postgres:5432/fineract_tenants
+      FINERACT_HIKARI_PASSWORD: postgres
+      FINERACT_HIKARI_USERNAME: postgres
+      FINERACT_SERVER_SSL_ENABLED: false
+    networks:
+      - fineract_network
+
+  web-app:
+    image: openmf/web-app:master
+    container_name: web-app
+    environment:
+      FINERACT_API_URL: http://localhost:8443
+      FINERACT_PLATFORM_TENANT_IDENTIFIER: default
+    ports:
+      - "80:80"
+    networks:
+      - fineract_network
+    depends_on:
+      - fineract  # Ensure web-app starts after fineract
+
+networks:
+  fineract_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

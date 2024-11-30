@@ -1,0 +1,30 @@
+# Logs
+*.log
+logs/
+debug.log
+
+# Environment variables
+.env
+
+# Docker-related files
+docker-compose.override.yml
+docker-compose.override.yaml
+*.env
+
+# PostgreSQL data
+postgres_data/
+
+# Ignore MacOS system files
+.DS_Store
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.iml
+
+# Generated files
+*.bak
+*.tmp
+
+# System generated files
+Thumbs.db

@@ -62,8 +62,8 @@ This repository contains a `docker-compose.yml` configuration to deploy a comple
 ## Setup
 
 ```bash
-git clone <repository-url>
-cd <repository-folder>
+git https://github.com/minthittun/fineract-docker-setup.git
+cd fineract-docker-setup
 docker-compose up -d
 ```
 
